@@ -1,0 +1,3 @@
+[submodule "grpc-protobufs"]
+	path = grpc-protobufs
+	url = https://github.com/PretendoNetwork/grpc-protobufs
