@@ -30,12 +30,12 @@ friends:
 	mkdir -p friends
 
 	protoc \
-	--proto_path=../grpc-protobufs/friends \
+	--proto_path=grpc-protobufs/friends \
 	--go_out=./friends \
 	--go_opt=paths=source_relative \
 	--go-grpc_out=./friends \
 	--go-grpc_opt=paths=source_relative \
-	../grpc-protobufs/friends/*.proto
+	grpc-protobufs/friends/*.proto
 
 go_mod:
 	test -f go.mod || (echo "go module not found. Creating.." && go mod init github.com/PretendoNetwork/grpc-go)

@@ -20,8 +20,11 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Friends_SendUserNotificationWiiU_FullMethodName = "/friends.Friends/SendUserNotificationWiiU"
-	Friends_GetUserFriendPIDs_FullMethodName        = "/friends.Friends/GetUserFriendPIDs"
+	Friends_SendUserNotificationWiiU_FullMethodName      = "/friends.Friends/SendUserNotificationWiiU"
+	Friends_GetUserFriendPIDs_FullMethodName             = "/friends.Friends/GetUserFriendPIDs"
+	Friends_SendUserFriendRequest_FullMethodName         = "/friends.Friends/SendUserFriendRequest"
+	Friends_GetUserFriendRequestsIncoming_FullMethodName = "/friends.Friends/GetUserFriendRequestsIncoming"
+	Friends_AcceptFriendRequest_FullMethodName           = "/friends.Friends/AcceptFriendRequest"
 )
 
 // FriendsClient is the client API for Friends service.
@@ -30,6 +33,9 @@ const (
 type FriendsClient interface {
 	SendUserNotificationWiiU(ctx context.Context, in *SendUserNotificationWiiURequest, opts ...grpc.CallOption) (*empty.Empty, error)
 	GetUserFriendPIDs(ctx context.Context, in *GetUserFriendPIDsRequest, opts ...grpc.CallOption) (*GetUserFriendPIDsResponse, error)
+	SendUserFriendRequest(ctx context.Context, in *SendUserFriendRequestRequest, opts ...grpc.CallOption) (*SendUserFriendRequestResponse, error)
+	GetUserFriendRequestsIncoming(ctx context.Context, in *GetUserFriendRequestsIncomingRequest, opts ...grpc.CallOption) (*GetUserFriendRequestsIncomingResponse, error)
+	AcceptFriendRequest(ctx context.Context, in *AcceptFriendRequestRequest, opts ...grpc.CallOption) (*AcceptFriendRequestResponse, error)
 }
 
 type friendsClient struct {
@@ -58,12 +64,42 @@ func (c *friendsClient) GetUserFriendPIDs(ctx context.Context, in *GetUserFriend
 	return out, nil
 }
 
+func (c *friendsClient) SendUserFriendRequest(ctx context.Context, in *SendUserFriendRequestRequest, opts ...grpc.CallOption) (*SendUserFriendRequestResponse, error) {
+	out := new(SendUserFriendRequestResponse)
+	err := c.cc.Invoke(ctx, Friends_SendUserFriendRequest_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *friendsClient) GetUserFriendRequestsIncoming(ctx context.Context, in *GetUserFriendRequestsIncomingRequest, opts ...grpc.CallOption) (*GetUserFriendRequestsIncomingResponse, error) {
+	out := new(GetUserFriendRequestsIncomingResponse)
+	err := c.cc.Invoke(ctx, Friends_GetUserFriendRequestsIncoming_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *friendsClient) AcceptFriendRequest(ctx context.Context, in *AcceptFriendRequestRequest, opts ...grpc.CallOption) (*AcceptFriendRequestResponse, error) {
+	out := new(AcceptFriendRequestResponse)
+	err := c.cc.Invoke(ctx, Friends_AcceptFriendRequest_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FriendsServer is the server API for Friends service.
 // All implementations must embed UnimplementedFriendsServer
 // for forward compatibility
 type FriendsServer interface {
 	SendUserNotificationWiiU(context.Context, *SendUserNotificationWiiURequest) (*empty.Empty, error)
 	GetUserFriendPIDs(context.Context, *GetUserFriendPIDsRequest) (*GetUserFriendPIDsResponse, error)
+	SendUserFriendRequest(context.Context, *SendUserFriendRequestRequest) (*SendUserFriendRequestResponse, error)
+	GetUserFriendRequestsIncoming(context.Context, *GetUserFriendRequestsIncomingRequest) (*GetUserFriendRequestsIncomingResponse, error)
+	AcceptFriendRequest(context.Context, *AcceptFriendRequestRequest) (*AcceptFriendRequestResponse, error)
 	mustEmbedUnimplementedFriendsServer()
 }
 
@@ -76,6 +112,15 @@ func (UnimplementedFriendsServer) SendUserNotificationWiiU(context.Context, *Sen
 }
 func (UnimplementedFriendsServer) GetUserFriendPIDs(context.Context, *GetUserFriendPIDsRequest) (*GetUserFriendPIDsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserFriendPIDs not implemented")
+}
+func (UnimplementedFriendsServer) SendUserFriendRequest(context.Context, *SendUserFriendRequestRequest) (*SendUserFriendRequestResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendUserFriendRequest not implemented")
+}
+func (UnimplementedFriendsServer) GetUserFriendRequestsIncoming(context.Context, *GetUserFriendRequestsIncomingRequest) (*GetUserFriendRequestsIncomingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserFriendRequestsIncoming not implemented")
+}
+func (UnimplementedFriendsServer) AcceptFriendRequest(context.Context, *AcceptFriendRequestRequest) (*AcceptFriendRequestResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AcceptFriendRequest not implemented")
 }
 func (UnimplementedFriendsServer) mustEmbedUnimplementedFriendsServer() {}
 
@@ -126,6 +171,60 @@ func _Friends_GetUserFriendPIDs_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Friends_SendUserFriendRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SendUserFriendRequestRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FriendsServer).SendUserFriendRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Friends_SendUserFriendRequest_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FriendsServer).SendUserFriendRequest(ctx, req.(*SendUserFriendRequestRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Friends_GetUserFriendRequestsIncoming_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserFriendRequestsIncomingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FriendsServer).GetUserFriendRequestsIncoming(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Friends_GetUserFriendRequestsIncoming_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FriendsServer).GetUserFriendRequestsIncoming(ctx, req.(*GetUserFriendRequestsIncomingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Friends_AcceptFriendRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AcceptFriendRequestRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FriendsServer).AcceptFriendRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Friends_AcceptFriendRequest_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FriendsServer).AcceptFriendRequest(ctx, req.(*AcceptFriendRequestRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Friends_ServiceDesc is the grpc.ServiceDesc for Friends service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -140,6 +239,18 @@ var Friends_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUserFriendPIDs",
 			Handler:    _Friends_GetUserFriendPIDs_Handler,
+		},
+		{
+			MethodName: "SendUserFriendRequest",
+			Handler:    _Friends_SendUserFriendRequest_Handler,
+		},
+		{
+			MethodName: "GetUserFriendRequestsIncoming",
+			Handler:    _Friends_GetUserFriendRequestsIncoming_Handler,
+		},
+		{
+			MethodName: "AcceptFriendRequest",
+			Handler:    _Friends_AcceptFriendRequest_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
