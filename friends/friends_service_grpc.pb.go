@@ -25,6 +25,7 @@ const (
 	Friends_SendUserFriendRequest_FullMethodName         = "/friends.Friends/SendUserFriendRequest"
 	Friends_GetUserFriendRequestsIncoming_FullMethodName = "/friends.Friends/GetUserFriendRequestsIncoming"
 	Friends_AcceptFriendRequest_FullMethodName           = "/friends.Friends/AcceptFriendRequest"
+	Friends_DenyFriendRequest_FullMethodName             = "/friends.Friends/DenyFriendRequest"
 )
 
 // FriendsClient is the client API for Friends service.
@@ -36,6 +37,7 @@ type FriendsClient interface {
 	SendUserFriendRequest(ctx context.Context, in *SendUserFriendRequestRequest, opts ...grpc.CallOption) (*SendUserFriendRequestResponse, error)
 	GetUserFriendRequestsIncoming(ctx context.Context, in *GetUserFriendRequestsIncomingRequest, opts ...grpc.CallOption) (*GetUserFriendRequestsIncomingResponse, error)
 	AcceptFriendRequest(ctx context.Context, in *AcceptFriendRequestRequest, opts ...grpc.CallOption) (*AcceptFriendRequestResponse, error)
+	DenyFriendRequest(ctx context.Context, in *DenyFriendRequestRequest, opts ...grpc.CallOption) (*DenyFriendRequestResponse, error)
 }
 
 type friendsClient struct {
@@ -91,6 +93,15 @@ func (c *friendsClient) AcceptFriendRequest(ctx context.Context, in *AcceptFrien
 	return out, nil
 }
 
+func (c *friendsClient) DenyFriendRequest(ctx context.Context, in *DenyFriendRequestRequest, opts ...grpc.CallOption) (*DenyFriendRequestResponse, error) {
+	out := new(DenyFriendRequestResponse)
+	err := c.cc.Invoke(ctx, Friends_DenyFriendRequest_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FriendsServer is the server API for Friends service.
 // All implementations must embed UnimplementedFriendsServer
 // for forward compatibility
@@ -100,6 +111,7 @@ type FriendsServer interface {
 	SendUserFriendRequest(context.Context, *SendUserFriendRequestRequest) (*SendUserFriendRequestResponse, error)
 	GetUserFriendRequestsIncoming(context.Context, *GetUserFriendRequestsIncomingRequest) (*GetUserFriendRequestsIncomingResponse, error)
 	AcceptFriendRequest(context.Context, *AcceptFriendRequestRequest) (*AcceptFriendRequestResponse, error)
+	DenyFriendRequest(context.Context, *DenyFriendRequestRequest) (*DenyFriendRequestResponse, error)
 	mustEmbedUnimplementedFriendsServer()
 }
 
@@ -121,6 +133,9 @@ func (UnimplementedFriendsServer) GetUserFriendRequestsIncoming(context.Context,
 }
 func (UnimplementedFriendsServer) AcceptFriendRequest(context.Context, *AcceptFriendRequestRequest) (*AcceptFriendRequestResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AcceptFriendRequest not implemented")
+}
+func (UnimplementedFriendsServer) DenyFriendRequest(context.Context, *DenyFriendRequestRequest) (*DenyFriendRequestResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DenyFriendRequest not implemented")
 }
 func (UnimplementedFriendsServer) mustEmbedUnimplementedFriendsServer() {}
 
@@ -225,6 +240,24 @@ func _Friends_AcceptFriendRequest_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Friends_DenyFriendRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DenyFriendRequestRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FriendsServer).DenyFriendRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Friends_DenyFriendRequest_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FriendsServer).DenyFriendRequest(ctx, req.(*DenyFriendRequestRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Friends_ServiceDesc is the grpc.ServiceDesc for Friends service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -251,6 +284,10 @@ var Friends_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AcceptFriendRequest",
 			Handler:    _Friends_AcceptFriendRequest_Handler,
+		},
+		{
+			MethodName: "DenyFriendRequest",
+			Handler:    _Friends_DenyFriendRequest_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
