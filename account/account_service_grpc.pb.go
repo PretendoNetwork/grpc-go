@@ -19,22 +19,16 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Account_IsBanned_FullMethodName         = "/account.Account/IsBanned"
-	Account_GetBasicUserData_FullMethodName = "/account.Account/GetBasicUserData"
-	Account_RegisterPNID_FullMethodName     = "/account.Account/RegisterPNID"
-	Account_Login_FullMethodName            = "/account.Account/Login"
+	Account_GetUserData_FullMethodName    = "/account.Account/GetUserData"
+	Account_GetNEXPassword_FullMethodName = "/account.Account/GetNEXPassword"
 )
 
 // AccountClient is the client API for Account service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AccountClient interface {
-	// Used by Juxt
-	IsBanned(ctx context.Context, in *IsBannedRequest, opts ...grpc.CallOption) (*IsBannedResponse, error)
-	GetBasicUserData(ctx context.Context, in *GetBasicUserDataRequest, opts ...grpc.CallOption) (*GetBasicUserDataResponse, error)
-	// Used by website
-	RegisterPNID(ctx context.Context, in *RegisterPNIDRequest, opts ...grpc.CallOption) (*LoginResponse, error)
-	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
+	GetUserData(ctx context.Context, in *GetUserDataRequest, opts ...grpc.CallOption) (*GetUserDataResponse, error)
+	GetNEXPassword(ctx context.Context, in *GetNEXPasswordRequest, opts ...grpc.CallOption) (*GetNEXPasswordResponse, error)
 }
 
 type accountClient struct {
@@ -45,36 +39,18 @@ func NewAccountClient(cc grpc.ClientConnInterface) AccountClient {
 	return &accountClient{cc}
 }
 
-func (c *accountClient) IsBanned(ctx context.Context, in *IsBannedRequest, opts ...grpc.CallOption) (*IsBannedResponse, error) {
-	out := new(IsBannedResponse)
-	err := c.cc.Invoke(ctx, Account_IsBanned_FullMethodName, in, out, opts...)
+func (c *accountClient) GetUserData(ctx context.Context, in *GetUserDataRequest, opts ...grpc.CallOption) (*GetUserDataResponse, error) {
+	out := new(GetUserDataResponse)
+	err := c.cc.Invoke(ctx, Account_GetUserData_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *accountClient) GetBasicUserData(ctx context.Context, in *GetBasicUserDataRequest, opts ...grpc.CallOption) (*GetBasicUserDataResponse, error) {
-	out := new(GetBasicUserDataResponse)
-	err := c.cc.Invoke(ctx, Account_GetBasicUserData_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *accountClient) RegisterPNID(ctx context.Context, in *RegisterPNIDRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
-	out := new(LoginResponse)
-	err := c.cc.Invoke(ctx, Account_RegisterPNID_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *accountClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
-	out := new(LoginResponse)
-	err := c.cc.Invoke(ctx, Account_Login_FullMethodName, in, out, opts...)
+func (c *accountClient) GetNEXPassword(ctx context.Context, in *GetNEXPasswordRequest, opts ...grpc.CallOption) (*GetNEXPasswordResponse, error) {
+	out := new(GetNEXPasswordResponse)
+	err := c.cc.Invoke(ctx, Account_GetNEXPassword_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -85,12 +61,8 @@ func (c *accountClient) Login(ctx context.Context, in *LoginRequest, opts ...grp
 // All implementations must embed UnimplementedAccountServer
 // for forward compatibility
 type AccountServer interface {
-	// Used by Juxt
-	IsBanned(context.Context, *IsBannedRequest) (*IsBannedResponse, error)
-	GetBasicUserData(context.Context, *GetBasicUserDataRequest) (*GetBasicUserDataResponse, error)
-	// Used by website
-	RegisterPNID(context.Context, *RegisterPNIDRequest) (*LoginResponse, error)
-	Login(context.Context, *LoginRequest) (*LoginResponse, error)
+	GetUserData(context.Context, *GetUserDataRequest) (*GetUserDataResponse, error)
+	GetNEXPassword(context.Context, *GetNEXPasswordRequest) (*GetNEXPasswordResponse, error)
 	mustEmbedUnimplementedAccountServer()
 }
 
@@ -98,17 +70,11 @@ type AccountServer interface {
 type UnimplementedAccountServer struct {
 }
 
-func (UnimplementedAccountServer) IsBanned(context.Context, *IsBannedRequest) (*IsBannedResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method IsBanned not implemented")
+func (UnimplementedAccountServer) GetUserData(context.Context, *GetUserDataRequest) (*GetUserDataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserData not implemented")
 }
-func (UnimplementedAccountServer) GetBasicUserData(context.Context, *GetBasicUserDataRequest) (*GetBasicUserDataResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetBasicUserData not implemented")
-}
-func (UnimplementedAccountServer) RegisterPNID(context.Context, *RegisterPNIDRequest) (*LoginResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RegisterPNID not implemented")
-}
-func (UnimplementedAccountServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
+func (UnimplementedAccountServer) GetNEXPassword(context.Context, *GetNEXPasswordRequest) (*GetNEXPasswordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetNEXPassword not implemented")
 }
 func (UnimplementedAccountServer) mustEmbedUnimplementedAccountServer() {}
 
@@ -123,74 +89,38 @@ func RegisterAccountServer(s grpc.ServiceRegistrar, srv AccountServer) {
 	s.RegisterService(&Account_ServiceDesc, srv)
 }
 
-func _Account_IsBanned_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(IsBannedRequest)
+func _Account_GetUserData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserDataRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccountServer).IsBanned(ctx, in)
+		return srv.(AccountServer).GetUserData(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Account_IsBanned_FullMethodName,
+		FullMethod: Account_GetUserData_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountServer).IsBanned(ctx, req.(*IsBannedRequest))
+		return srv.(AccountServer).GetUserData(ctx, req.(*GetUserDataRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Account_GetBasicUserData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetBasicUserDataRequest)
+func _Account_GetNEXPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetNEXPasswordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccountServer).GetBasicUserData(ctx, in)
+		return srv.(AccountServer).GetNEXPassword(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Account_GetBasicUserData_FullMethodName,
+		FullMethod: Account_GetNEXPassword_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountServer).GetBasicUserData(ctx, req.(*GetBasicUserDataRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Account_RegisterPNID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RegisterPNIDRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AccountServer).RegisterPNID(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Account_RegisterPNID_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountServer).RegisterPNID(ctx, req.(*RegisterPNIDRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Account_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LoginRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AccountServer).Login(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Account_Login_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountServer).Login(ctx, req.(*LoginRequest))
+		return srv.(AccountServer).GetNEXPassword(ctx, req.(*GetNEXPasswordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -203,20 +133,12 @@ var Account_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*AccountServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "IsBanned",
-			Handler:    _Account_IsBanned_Handler,
+			MethodName: "GetUserData",
+			Handler:    _Account_GetUserData_Handler,
 		},
 		{
-			MethodName: "GetBasicUserData",
-			Handler:    _Account_GetBasicUserData_Handler,
-		},
-		{
-			MethodName: "RegisterPNID",
-			Handler:    _Account_RegisterPNID_Handler,
-		},
-		{
-			MethodName: "Login",
-			Handler:    _Account_Login_Handler,
+			MethodName: "GetNEXPassword",
+			Handler:    _Account_GetNEXPassword_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
