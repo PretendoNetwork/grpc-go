@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	Account_GetUserData_FullMethodName    = "/account.Account/GetUserData"
 	Account_GetNEXPassword_FullMethodName = "/account.Account/GetNEXPassword"
+	Account_GetNEXData_FullMethodName     = "/account.Account/GetNEXData"
 )
 
 // AccountClient is the client API for Account service.
@@ -29,6 +30,7 @@ const (
 type AccountClient interface {
 	GetUserData(ctx context.Context, in *GetUserDataRequest, opts ...grpc.CallOption) (*GetUserDataResponse, error)
 	GetNEXPassword(ctx context.Context, in *GetNEXPasswordRequest, opts ...grpc.CallOption) (*GetNEXPasswordResponse, error)
+	GetNEXData(ctx context.Context, in *GetNEXDataRequest, opts ...grpc.CallOption) (*GetNEXDataResponse, error)
 }
 
 type accountClient struct {
@@ -57,12 +59,22 @@ func (c *accountClient) GetNEXPassword(ctx context.Context, in *GetNEXPasswordRe
 	return out, nil
 }
 
+func (c *accountClient) GetNEXData(ctx context.Context, in *GetNEXDataRequest, opts ...grpc.CallOption) (*GetNEXDataResponse, error) {
+	out := new(GetNEXDataResponse)
+	err := c.cc.Invoke(ctx, Account_GetNEXData_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AccountServer is the server API for Account service.
 // All implementations must embed UnimplementedAccountServer
 // for forward compatibility
 type AccountServer interface {
 	GetUserData(context.Context, *GetUserDataRequest) (*GetUserDataResponse, error)
 	GetNEXPassword(context.Context, *GetNEXPasswordRequest) (*GetNEXPasswordResponse, error)
+	GetNEXData(context.Context, *GetNEXDataRequest) (*GetNEXDataResponse, error)
 	mustEmbedUnimplementedAccountServer()
 }
 
@@ -75,6 +87,9 @@ func (UnimplementedAccountServer) GetUserData(context.Context, *GetUserDataReque
 }
 func (UnimplementedAccountServer) GetNEXPassword(context.Context, *GetNEXPasswordRequest) (*GetNEXPasswordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetNEXPassword not implemented")
+}
+func (UnimplementedAccountServer) GetNEXData(context.Context, *GetNEXDataRequest) (*GetNEXDataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetNEXData not implemented")
 }
 func (UnimplementedAccountServer) mustEmbedUnimplementedAccountServer() {}
 
@@ -125,6 +140,24 @@ func _Account_GetNEXPassword_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Account_GetNEXData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetNEXDataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).GetNEXData(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Account_GetNEXData_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).GetNEXData(ctx, req.(*GetNEXDataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Account_ServiceDesc is the grpc.ServiceDesc for Account service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -139,6 +172,10 @@ var Account_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetNEXPassword",
 			Handler:    _Account_GetNEXPassword_Handler,
+		},
+		{
+			MethodName: "GetNEXData",
+			Handler:    _Account_GetNEXData_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
