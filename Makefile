@@ -1,4 +1,4 @@
-build: pull account miiverse friends go_mod
+build: pull account miiverse friends nex go_mod
 
 pull:
 	git submodule init
@@ -37,8 +37,19 @@ friends:
 	--go-grpc_opt=paths=source_relative \
 	grpc-protobufs/friends/*.proto
 
+nex:
+	mkdir -p nex
+
+	protoc \
+	--proto_path=grpc-protobufs/nex \
+	--go_out=./nex \
+	--go_opt=paths=source_relative \
+	--go-grpc_out=./nex \
+	--go-grpc_opt=paths=source_relative \
+	grpc-protobufs/nex/*.proto
+
 go_mod:
 	test -f go.mod || (echo "go module not found. Creating.." && go mod init github.com/PretendoNetwork/grpc-go)
 	go mod tidy
 
-.PHONY: pull account miiverse friends go_mod
+.PHONY: pull account miiverse friends nex go_mod
